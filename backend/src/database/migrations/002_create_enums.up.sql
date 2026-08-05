@@ -1,0 +1,13 @@
+CREATE TYPE transaction_type AS ENUM ('income', 'expense', 'transfer');
+CREATE TYPE category_type AS ENUM ('income', 'expense');
+CREATE TYPE budget_status AS ENUM ('active', 'completed', 'expired');
+CREATE TYPE budget_period AS ENUM ('monthly', 'weekly', 'yearly');
+CREATE TYPE goal_status AS ENUM ('active', 'completed', 'cancelled');
+CREATE TYPE notification_type AS ENUM ('system', 'security', 'goal', 'budget', 'transaction', 'ai');
+CREATE TYPE notification_priority AS ENUM ('low', 'medium', 'high');
+CREATE TYPE import_status AS ENUM ('pending', 'processing', 'completed', 'failed');
+CREATE TYPE payment_method AS ENUM ('cash', 'card', 'bank_transfer', 'upi');
+CREATE TYPE transaction_source AS ENUM ('manual', 'csv', 'sms', 'api');
+CREATE TYPE payment_intent_status AS ENUM ('pending', 'completed', 'failed');
+CREATE TYPE insight_type AS ENUM ('spending_analysis', 'budget_warning', 'goal_prediction', 'general');
+CREATE TYPE theme_preference AS ENUM ('light', 'dark', 'system');

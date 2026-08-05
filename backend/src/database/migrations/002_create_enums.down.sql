@@ -1,0 +1,13 @@
+DROP TYPE IF EXISTS theme_preference CASCADE;
+DROP TYPE IF EXISTS insight_type CASCADE;
+DROP TYPE IF EXISTS payment_intent_status CASCADE;
+DROP TYPE IF EXISTS transaction_source CASCADE;
+DROP TYPE IF EXISTS payment_method CASCADE;
+DROP TYPE IF EXISTS import_status CASCADE;
+DROP TYPE IF EXISTS notification_priority CASCADE;
+DROP TYPE IF EXISTS notification_type CASCADE;
+DROP TYPE IF EXISTS goal_status CASCADE;
+DROP TYPE IF EXISTS budget_period CASCADE;
+DROP TYPE IF EXISTS budget_status CASCADE;
+DROP TYPE IF EXISTS category_type CASCADE;
+DROP TYPE IF EXISTS transaction_type CASCADE;

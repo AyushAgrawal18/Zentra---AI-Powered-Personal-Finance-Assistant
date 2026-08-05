@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS ai_embeddings CASCADE;
+DROP TABLE IF EXISTS ai_conversations CASCADE;
+DROP TABLE IF EXISTS ai_insights CASCADE;
