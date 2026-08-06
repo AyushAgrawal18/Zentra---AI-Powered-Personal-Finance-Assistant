@@ -11,4 +11,8 @@ router.get('/health', (req: Request, res: Response) => {
   });
 });
 
+import { authRoutes } from '../modules/auth/routes';
+
+router.use('/auth', authRoutes);
+
 export default router;

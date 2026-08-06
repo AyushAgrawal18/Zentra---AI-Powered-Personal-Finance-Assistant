@@ -30,7 +30,7 @@ app.use(compression());
 app.use(requestLogger);
 
 // Routes
-app.use('/', routes);
+app.use('/api/v1', routes);
 
 // 404 Handler
 app.use(notFound);
