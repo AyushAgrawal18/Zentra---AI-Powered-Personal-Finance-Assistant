@@ -306,10 +306,10 @@ export class TransactionRepository {
 
   async categoryExists(categoryId: string, userId: string): Promise<boolean> {
     try {
-      // A category belongs to the user OR is a default (system) category
+      // A category belongs to the user OR is a global system category (user_id IS NULL)
       const query = `
         SELECT 1 FROM categories
-        WHERE id = $1 AND (user_id = $2 OR is_default = true) AND deleted_at IS NULL;
+        WHERE id = $1 AND (user_id = $2 OR is_system = true) AND deleted_at IS NULL;
       `;
       const result = await db.query(query, [categoryId, userId]);
       return (result.rowCount ?? 0) > 0;

@@ -13,8 +13,14 @@ router.get('/health', (req: Request, res: Response) => {
 
 import { authRoutes } from '../modules/auth/routes';
 import { transactionRoutes } from '../modules/transactions/routes';
+import { categoryRoutes } from '../modules/categories/routes';
+import { budgetRoutes } from '../modules/budgets/routes';
+import { goalRoutes } from '../modules/goals/routes';
 
 router.use('/auth', authRoutes);
 router.use('/transactions', transactionRoutes);
+router.use('/categories', categoryRoutes);
+router.use('/budgets', budgetRoutes);
+router.use('/goals', goalRoutes);
 
 export default router;

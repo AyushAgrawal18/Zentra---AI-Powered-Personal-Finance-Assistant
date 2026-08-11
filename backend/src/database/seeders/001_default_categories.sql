@@ -1,5 +1,5 @@
 -- Default initial categories for users
-INSERT INTO categories (user_id, name, type, icon, color, is_default)
+INSERT INTO categories (user_id, name, type, icon, color, is_system)
 VALUES
   -- This is a placeholder since user_id is required, in application logic this will be seeded per user
   -- Or default system categories if applicable.
