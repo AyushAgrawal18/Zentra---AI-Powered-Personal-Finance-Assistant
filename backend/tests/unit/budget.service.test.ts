@@ -86,7 +86,10 @@ describe('createBudgetService', () => {
     const overallBudget = { ...mockBudget, category_id: null, category_name: null, name: 'Overall Budget' };
     (repo.createBudget as jest.Mock).mockResolvedValue(overallBudget);
 
-    const result = await createBudgetService('user-uuid-1', { amount: 50000, period: 'MONTHLY' });
+    const result = await createBudgetService('user-uuid-1', {
+      amount: 50000, period: 'MONTHLY',
+      alertThreshold: 0
+    });
     expect(result.categoryId).toBeNull();
     expect(result.amount).toBe(10000);
   });
