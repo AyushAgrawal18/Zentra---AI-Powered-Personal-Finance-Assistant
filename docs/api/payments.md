@@ -1,5 +1,7 @@
 # Payments API
+
 ---
+
 title: Payments API
 
 module: api
@@ -13,12 +15,14 @@ priority: Critical
 owner: Backend Team
 
 related_docs:
-  - api_overview.md
-  - authentication.md
-  - errors.md
-  - pagination.md
-  - ../development/features/payments.md
-  - ../architecture/payment_architecture.md
+
+- api_overview.md
+- authentication.md
+- errors.md
+- pagination.md
+- ../development/features/payments.md
+- ../architecture/payment_architecture.md
+
 ---
 
 # Payments API
@@ -121,13 +125,13 @@ Update Dashboard
 
 # 4. Endpoints
 
-| Method | Endpoint | Description |
-|---------|----------|-------------|
-| POST | /payments/initiate | Create payment intent |
-| GET | /payments | Payment history |
-| GET | /payments/{id} | Payment details |
-| POST | /payments/{id}/reconcile | Reconcile payment |
-| DELETE | /payments/{id} | Cancel payment intent |
+| Method | Endpoint                 | Description           |
+| ------ | ------------------------ | --------------------- |
+| POST   | /payments/initiate       | Create payment intent |
+| GET    | /payments                | Payment history       |
+| GET    | /payments/{id}           | Payment details       |
+| POST   | /payments/{id}/reconcile | Reconcile payment     |
+| DELETE | /payments/{id}           | Cancel payment intent |
 
 ---
 
@@ -145,13 +149,14 @@ A payment intent contains:
 - Created Time
 - Completed Time
 
-Possible status values:
+Schema-backed status values:
 
 - PENDING
-- SUCCESS
+- COMPLETED
 - FAILED
-- CANCELLED
-- EXPIRED
+
+The database does not contain cancellation or expiry states. A pending intent
+is cancelled by deleting it; completed and failed intents remain immutable.
 
 ---
 
@@ -186,8 +191,7 @@ POST /api/v1/payments/initiate
   "data": {
     "paymentId": "uuid",
     "status": "PENDING",
-    "upiDeepLink": "upi://pay?...",
-    "expiresAt": "2026-08-01T12:00:00Z"
+    "upiDeepLink": "upi://pay?..."
   }
 }
 ```
@@ -213,7 +217,7 @@ Supports:
 Example
 
 ```http
-GET /payments?status=SUCCESS&page=1&limit=20
+GET /payments?status=COMPLETED&page=1&limit=20
 ```
 
 Returns the user's payment history.
@@ -239,7 +243,7 @@ Example Response
     "id": "uuid",
     "merchantName": "ABC Supermarket",
     "amount": 1200,
-    "status": "SUCCESS",
+    "status": "COMPLETED",
     "paymentReference": "UPI123456789",
     "createdAt": "2026-08-01T10:30:00Z"
   }
@@ -260,11 +264,20 @@ Purpose
 
 Verify the payment outcome and update the payment intent.
 
+For a successful outcome, `categoryId` is required because reconciliation
+creates the user's expense transaction:
+
+```json
+{
+  "outcome": "SUCCESS",
+  "categoryId": "uuid"
+}
+```
+
 Possible outcomes:
 
 - SUCCESS
 - FAILED
-- CANCELLED
 
 A successful reconciliation automatically creates a financial transaction.
 
@@ -286,15 +299,15 @@ Completed payments cannot be cancelled.
 
 # 11. Query Parameters
 
-| Parameter | Description |
-|-----------|-------------|
-| status | Payment status |
-| from | Start date |
-| to | End date |
-| page | Page number |
-| limit | Page size |
-| sort | Sort field |
-| order | asc / desc |
+| Parameter | Description    |
+| --------- | -------------- |
+| status    | Payment status |
+| from      | Start date     |
+| to        | End date       |
+| page      | Page number    |
+| limit     | Page size      |
+| sort      | Sort field     |
+| order     | asc / desc     |
 
 ---
 
@@ -306,7 +319,7 @@ Validation includes:
 - Merchant name is required.
 - UPI ID must follow supported formats.
 - Description length must not exceed configured limits.
-- Payment intent must not be expired.
+- Payment intent expiration is not persisted in the current database schema.
 - Duplicate reconciliation requests are rejected.
 
 Validation failures return HTTP 422.
@@ -322,7 +335,7 @@ Successful payment
   "success": true,
   "data": {
     "paymentId": "uuid",
-    "status": "SUCCESS",
+    "status": "COMPLETED",
     "transactionId": "uuid"
   }
 }
@@ -344,15 +357,15 @@ Failed payment
 
 # 14. Error Responses
 
-| HTTP | Error Code |
-|------|------------|
-| 400 | BAD_REQUEST |
-| 401 | UNAUTHORIZED |
-| 403 | FORBIDDEN |
-| 404 | PAYMENT_NOT_FOUND |
-| 409 | PAYMENT_ALREADY_RECONCILED |
-| 422 | VALIDATION_ERROR |
-| 500 | INTERNAL_SERVER_ERROR |
+| HTTP | Error Code                 |
+| ---- | -------------------------- |
+| 400  | BAD_REQUEST                |
+| 401  | UNAUTHORIZED               |
+| 403  | FORBIDDEN                  |
+| 404  | PAYMENT_NOT_FOUND          |
+| 409  | PAYMENT_ALREADY_RECONCILED |
+| 422  | VALIDATION_ERROR           |
+| 500  | INTERNAL_SERVER_ERROR      |
 
 All responses follow `errors.md`.
 
@@ -377,7 +390,7 @@ The Payments API enforces:
 - JWT Authentication
 - User ownership validation
 - HTTPS-only communication
-- Idempotency for reconciliation
+- Idempotency for initiation (when `Idempotency-Key` is supplied) and reconciliation
 - Rate limiting
 - Secure audit logging
 

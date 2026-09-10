@@ -1,4 +1,5 @@
 # Feature Specification: UPI Payments & Deep Links
+
 # 💳 Payments Feature Specification
 
 > **Project:** Zentra
@@ -9,7 +10,7 @@
 >
 > **Priority:** P0
 >
-> **Status:** Planned
+> **Status:** Completed
 >
 > **Owner:** Backend & Frontend Team
 
