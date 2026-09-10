@@ -123,14 +123,14 @@ Complete
 
 # 4. Endpoints
 
-| Method | Endpoint | Description |
-|---------|----------|-------------|
-| POST | /imports/csv/upload | Upload CSV |
-| GET | /imports/csv/{id}/preview | Preview parsed data |
-| POST | /imports/csv/{id}/confirm | Execute import |
-| GET | /imports/csv | Import history |
-| GET | /imports/csv/{id} | Import details |
-| DELETE | /imports/csv/{id} | Cancel pending import |
+| Method | Endpoint                  | Description           |
+| ------ | ------------------------- | --------------------- |
+| POST   | /imports/csv/upload       | Upload CSV            |
+| GET    | /imports/csv/{id}/preview | Preview parsed data   |
+| POST   | /imports/csv/{id}/confirm | Execute import        |
+| GET    | /imports/csv              | Import history        |
+| GET    | /imports/csv/{id}         | Import details        |
+| DELETE | /imports/csv/{id}         | Cancel pending import |
 
 ---
 
@@ -313,6 +313,10 @@ Validation includes:
 
 Validation failures return HTTP 422.
 
+The current transaction schema requires a category. CSV rows must therefore
+include a category name or category UUID resolvable to one of the authenticated
+user's categories or system categories; rows without one are reported invalid.
+
 ---
 
 # 13. Duplicate Detection
@@ -367,17 +371,17 @@ Import History
 
 # 15. Error Responses
 
-| HTTP | Error Code |
-|------|------------|
-| 400 | INVALID_FILE |
-| 401 | UNAUTHORIZED |
-| 403 | FORBIDDEN |
-| 404 | IMPORT_NOT_FOUND |
-| 409 | IMPORT_ALREADY_COMPLETED |
-| 413 | FILE_TOO_LARGE |
-| 415 | UNSUPPORTED_FILE_TYPE |
-| 422 | VALIDATION_ERROR |
-| 500 | INTERNAL_SERVER_ERROR |
+| HTTP | Error Code               |
+| ---- | ------------------------ |
+| 400  | INVALID_FILE             |
+| 401  | UNAUTHORIZED             |
+| 403  | FORBIDDEN                |
+| 404  | IMPORT_NOT_FOUND         |
+| 409  | IMPORT_ALREADY_COMPLETED |
+| 413  | FILE_TOO_LARGE           |
+| 415  | UNSUPPORTED_FILE_TYPE    |
+| 422  | VALIDATION_ERROR         |
+| 500  | INTERNAL_SERVER_ERROR    |
 
 Responses follow `errors.md`.
 

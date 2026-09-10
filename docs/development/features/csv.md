@@ -1,4 +1,5 @@
 # Feature Specification: CSV Statement Import
+
 # 📄 CSV Import Feature Specification
 
 > **Project:** Zentra
@@ -9,8 +10,14 @@
 >
 > **Priority:** P0
 >
-> **Status:** Planned
->
+> **Status:** Completed
+
+Implementation note: the current `csv_imports` schema stores import metadata and
+counts, but no file contents or row payload. Upload, preview, and confirmation
+therefore share parsed rows in the running backend process; durable resume after
+process restart requires a future schema extension and is intentionally not
+invented here.
+
 > **Owner:** Backend & Frontend Team
 
 ---
@@ -173,13 +180,13 @@ Each supported format should have its own parser.
 
 Required Fields
 
-| CSV Column | Zentra Field |
-|------------|--------------|
-| Date | Transaction Date |
-| Description | Merchant / Description |
-| Amount | Amount |
-| Type | Income / Expense |
-| Balance | Account Balance (Optional) |
+| CSV Column  | Zentra Field               |
+| ----------- | -------------------------- |
+| Date        | Transaction Date           |
+| Description | Merchant / Description     |
+| Amount      | Amount                     |
+| Type        | Income / Expense           |
+| Balance     | Account Balance (Optional) |
 
 Optional Fields
 

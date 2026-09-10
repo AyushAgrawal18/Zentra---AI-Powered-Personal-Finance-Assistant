@@ -19,6 +19,7 @@ import { goalRoutes } from "../modules/goals/routes";
 import { dashboardRoutes } from "../modules/dashboard/routes";
 import { analyticsRoutes } from "../modules/analytics/routes";
 import { paymentRoutes } from "../modules/payments/routes";
+import { csvRoutes } from "../modules/csv/routes";
 
 router.use("/auth", authRoutes);
 router.use("/transactions", transactionRoutes);
@@ -28,5 +29,6 @@ router.use("/goals", goalRoutes);
 router.use("/dashboard", dashboardRoutes);
 router.use("/analytics", analyticsRoutes);
 router.use("/payments", paymentRoutes);
+router.use("/imports/csv", csvRoutes);
 
 export default router;
