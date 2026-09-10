@@ -66,6 +66,10 @@ Insights are informational only.
 
 The AI never performs financial operations automatically.
 
+The current implementation uses deterministic backend analysis because no AI
+provider or model adapter is configured in the repository. Insight messages are
+derived only from verified, user-owned financial aggregates.
+
 ---
 
 # 2. Authentication
