@@ -76,15 +76,15 @@ Budgets are private to the authenticated user.
 
 # 3. Endpoints
 
-| Method | Endpoint | Description |
-|---------|----------|-------------|
-| GET | /budgets | List budgets |
-| POST | /budgets | Create budget |
-| GET | /budgets/{id} | Get budget |
-| PATCH | /budgets/{id} | Update budget |
-| DELETE | /budgets/{id} | Delete budget |
-| GET | /budgets/{id}/progress | Budget progress |
-| GET | /budgets/summary | Budget summary |
+| Method | Endpoint               | Description     |
+| ------ | ---------------------- | --------------- |
+| GET    | /budgets               | List budgets    |
+| POST   | /budgets               | Create budget   |
+| GET    | /budgets/{id}          | Get budget      |
+| PATCH  | /budgets/{id}          | Update budget   |
+| DELETE | /budgets/{id}          | Delete budget   |
+| GET    | /budgets/{id}/progress | Budget progress |
+| GET    | /budgets/summary       | Budget summary  |
 
 ---
 
@@ -101,11 +101,14 @@ A budget contains:
 - Alert Threshold
 - Status
 
-Supported periods
+Supported database periods
 
 - Monthly
-- Quarterly
+- Weekly
 - Yearly
+
+Version 1 product scope currently exposes monthly budgets. Quarterly budgets are
+not supported by the database enum and must not be sent to the API.
 
 ---
 
@@ -257,15 +260,15 @@ Possible status values
 
 # 11. Query Parameters
 
-| Parameter | Description |
-|------------|-------------|
-| period | Monthly, Quarterly, Yearly |
-| category | Category ID |
-| status | Budget status |
-| page | Page number |
-| limit | Page size |
-| sort | Sort field |
-| order | asc / desc |
+| Parameter | Description             |
+| --------- | ----------------------- |
+| period    | Monthly, Weekly, Yearly |
+| category  | Category ID             |
+| status    | Budget status           |
+| page      | Page number             |
+| limit     | Page size               |
+| sort      | Sort field              |
+| order     | asc / desc              |
 
 ---
 
@@ -320,15 +323,15 @@ Collection
 
 # 14. Error Responses
 
-| HTTP | Error Code |
-|------|------------|
-| 400 | BAD_REQUEST |
-| 401 | UNAUTHORIZED |
-| 403 | FORBIDDEN |
-| 404 | BUDGET_NOT_FOUND |
-| 409 | BUDGET_ALREADY_EXISTS |
-| 422 | VALIDATION_ERROR |
-| 500 | INTERNAL_SERVER_ERROR |
+| HTTP | Error Code            |
+| ---- | --------------------- |
+| 400  | BAD_REQUEST           |
+| 401  | UNAUTHORIZED          |
+| 403  | FORBIDDEN             |
+| 404  | BUDGET_NOT_FOUND      |
+| 409  | BUDGET_ALREADY_EXISTS |
+| 422  | VALIDATION_ERROR      |
+| 500  | INTERNAL_SERVER_ERROR |
 
 Responses follow `errors.md`.
 
