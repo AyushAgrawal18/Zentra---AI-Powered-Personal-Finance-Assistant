@@ -1,1 +1,1 @@
-export * from './ai.mapper';
+export * from "./ai.mapper";

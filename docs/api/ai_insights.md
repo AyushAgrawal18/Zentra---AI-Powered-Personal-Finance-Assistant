@@ -140,12 +140,12 @@ Insights may also be regenerated after significant financial changes.
 
 # 5. Endpoints
 
-| Method | Endpoint | Description |
-|---------|----------|-------------|
-| GET | /ai/insights | List insights |
-| GET | /ai/insights/{id} | Get insight |
-| POST | /ai/insights/refresh | Regenerate insights |
-| GET | /ai/insights/history | Insight history |
+| Method | Endpoint             | Description         |
+| ------ | -------------------- | ------------------- |
+| GET    | /ai/insights         | List insights       |
+| GET    | /ai/insights/{id}    | Get insight         |
+| POST   | /ai/insights/refresh | Regenerate insights |
+| GET    | /ai/insights/history | Insight history     |
 
 ---
 
@@ -259,14 +259,14 @@ Supports:
 
 # 11. Query Parameters
 
-| Parameter | Description |
-|-----------|-------------|
-| category | Insight category |
-| priority | LOW / MEDIUM / HIGH |
-| page | Page number |
-| limit | Page size |
-| sort | Sort field |
-| order | asc / desc |
+| Parameter | Description         |
+| --------- | ------------------- |
+| category  | Insight category    |
+| priority  | LOW / MEDIUM / HIGH |
+| page      | Page number         |
+| limit     | Page size           |
+| sort      | Sort field          |
+| order     | asc / desc          |
 
 ---
 
@@ -322,15 +322,15 @@ Insight History
 
 # 14. Error Responses
 
-| HTTP | Error Code |
-|------|------------|
-| 400 | BAD_REQUEST |
-| 401 | UNAUTHORIZED |
-| 403 | FORBIDDEN |
-| 404 | INSIGHT_NOT_FOUND |
-| 429 | RATE_LIMIT_EXCEEDED |
-| 422 | VALIDATION_ERROR |
-| 500 | AI_SERVICE_ERROR |
+| HTTP | Error Code          |
+| ---- | ------------------- |
+| 400  | BAD_REQUEST         |
+| 401  | UNAUTHORIZED        |
+| 403  | FORBIDDEN           |
+| 404  | INSIGHT_NOT_FOUND   |
+| 429  | RATE_LIMIT_EXCEEDED |
+| 422  | VALIDATION_ERROR    |
+| 500  | AI_SERVICE_ERROR    |
 
 Responses follow `errors.md`.
 

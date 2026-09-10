@@ -1,4 +1,5 @@
 # Feature Specification: AI Financial Insights
+
 # 🧠 AI Insights Feature Specification
 
 > **Project:** Zentra
@@ -16,7 +17,7 @@ defined in the current repository. Version 1 therefore uses deterministic,
 provider-independent insight rules over verified aggregates and persists only
 the existing `ai_insights` columns. The design keeps the provider boundary open
 for a future LLM implementation without fabricating model output.
->
+
 > **Owner:** AI & Backend Team
 
 ---
