@@ -59,6 +59,9 @@ Version 1 supports:
 - PDF Export
 - Report History
 
+Reports are generated synchronously by the current backend implementation and
+stored as immutable JSON snapshots in the existing `reports.parameters` field.
+
 Reports are generated from Analytics and Transactions.
 
 ---
@@ -94,13 +97,13 @@ Supported export formats:
 
 # 4. Endpoints
 
-| Method | Endpoint | Description |
-|---------|----------|-------------|
-| POST | /reports | Generate report |
-| GET | /reports | Report history |
-| GET | /reports/{id} | Report details |
-| GET | /reports/{id}/download | Download report |
-| DELETE | /reports/{id} | Delete report |
+| Method | Endpoint               | Description     |
+| ------ | ---------------------- | --------------- |
+| POST   | /reports               | Generate report |
+| GET    | /reports               | Report history  |
+| GET    | /reports/{id}          | Report details  |
+| GET    | /reports/{id}/download | Download report |
+| DELETE | /reports/{id}          | Delete report   |
 
 ---
 
@@ -111,19 +114,12 @@ A report contains:
 - Report ID
 - Report Type
 - Format
-- Status
-- File Size
+- Generation status (completed after generation)
 - Created At
-- Expires At
 - Download URL
 
-Possible status values:
-
-- PENDING
-- PROCESSING
-- COMPLETED
-- FAILED
-- EXPIRED
+The current schema supports completed report snapshots only. Processing,
+failure, expiry, and file-size states are not persisted by the existing table.
 
 ---
 
@@ -235,15 +231,15 @@ Deleting a report does not modify financial data.
 
 # 11. Query Parameters
 
-| Parameter | Description |
-|-----------|-------------|
-| type | Report type |
-| format | PDF / CSV |
-| status | Generation status |
-| page | Page number |
-| limit | Page size |
-| sort | Sort field |
-| order | asc / desc |
+| Parameter | Description       |
+| --------- | ----------------- |
+| type      | Report type       |
+| format    | PDF / CSV         |
+| status    | Generation status |
+| page      | Page number       |
+| limit     | Page size         |
+| sort      | Sort field        |
+| order     | asc / desc        |
 
 ---
 
@@ -298,15 +294,15 @@ Report History
 
 # 14. Error Responses
 
-| HTTP | Error Code |
-|------|------------|
-| 400 | BAD_REQUEST |
-| 401 | UNAUTHORIZED |
-| 403 | FORBIDDEN |
-| 404 | REPORT_NOT_FOUND |
-| 409 | REPORT_ALREADY_GENERATING |
-| 422 | VALIDATION_ERROR |
-| 500 | INTERNAL_SERVER_ERROR |
+| HTTP | Error Code                |
+| ---- | ------------------------- |
+| 400  | BAD_REQUEST               |
+| 401  | UNAUTHORIZED              |
+| 403  | FORBIDDEN                 |
+| 404  | REPORT_NOT_FOUND          |
+| 409  | REPORT_ALREADY_GENERATING |
+| 422  | VALIDATION_ERROR          |
+| 500  | INTERNAL_SERVER_ERROR     |
 
 Responses follow `errors.md`.
 

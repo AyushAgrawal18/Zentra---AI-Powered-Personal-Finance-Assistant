@@ -1,4 +1,5 @@
 # Feature Specification: Financial Reports
+
 # 📑 Reports Feature Specification
 
 > **Project:** Zentra
@@ -9,8 +10,13 @@
 >
 > **Priority:** P1
 >
-> **Status:** Planned
->
+> **Status:** Completed
+
+Implementation note: the locked `reports` table stores report type, JSON
+parameters, and a download URL only. Report content and format are preserved
+inside the JSON snapshot; persisted processing, expiry, and file-size columns
+are not present and were not invented.
+
 > **Owner:** Backend & Frontend Team
 
 ---
