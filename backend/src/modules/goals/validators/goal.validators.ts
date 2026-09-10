@@ -1,34 +1,60 @@
-import { z } from 'zod';
+import { z } from "zod";
 import {
   GOAL_SORT_FIELDS,
   GOAL_DEFAULT_LIMIT,
   GOAL_DEFAULT_PAGE,
   GOAL_MAX_LIMIT,
-} from '../constants';
+} from "../constants";
 
 const sortFieldValues = Object.keys(GOAL_SORT_FIELDS) as [string, ...string[]];
-const statusValues = ['ACTIVE', 'COMPLETED', 'CANCELLED', 'active', 'completed', 'cancelled'] as const;
+const statusValues = [
+  "ACTIVE",
+  "COMPLETED",
+  "CANCELLED",
+  "active",
+  "completed",
+  "cancelled",
+] as const;
+
+const goalDateSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Target date must be in YYYY-MM-DD format")
+  .refine((value) => {
+    const [year, month, day] = value.split("-").map(Number);
+    const date = new Date(Date.UTC(year, month - 1, day));
+    return (
+      date.getUTCFullYear() === year &&
+      date.getUTCMonth() === month - 1 &&
+      date.getUTCDate() === day
+    );
+  }, "Target date must be a valid calendar date")
+  .refine(
+    (value) =>
+      new Date(`${value}T00:00:00.000Z`) >=
+      new Date(`${new Date().toISOString().split("T")[0]}T00:00:00.000Z`),
+    "Target date must be today or a future date",
+  );
 
 // ── Create Goal ───────────────────────────────────────────────────────────────
 export const createGoalSchema = z.object({
   body: z.object({
     name: z
-      .string({ required_error: 'Goal name is required' })
-      .min(2, 'Name must be at least 2 characters')
-      .max(100, 'Name must not exceed 100 characters')
+      .string({ required_error: "Goal name is required" })
+      .min(2, "Name must be at least 2 characters")
+      .max(100, "Name must not exceed 100 characters")
       .trim(),
     targetAmount: z
-      .number({ required_error: 'Target amount is required' })
-      .positive('Target amount must be greater than 0'),
-    targetDate: z
-      .string({ required_error: 'Target date is required' })
-      .regex(/^\d{4}-\d{2}-\d{2}$/, 'Target date must be in YYYY-MM-DD format')
-      .refine(
-        (d) => new Date(d) >= new Date(new Date().toISOString().split('T')[0]),
-        'Target date must be today or a future date',
-      ),
-    notes: z.string().max(1000, 'Notes must not exceed 1000 characters').optional(),
-    description: z.string().max(1000, 'Description must not exceed 1000 characters').optional(),
+      .number({ required_error: "Target amount is required" })
+      .positive("Target amount must be greater than 0"),
+    targetDate: goalDateSchema,
+    notes: z
+      .string()
+      .max(1000, "Notes must not exceed 1000 characters")
+      .optional(),
+    description: z
+      .string()
+      .max(1000, "Description must not exceed 1000 characters")
+      .optional(),
   }),
 });
 
@@ -37,26 +63,19 @@ export const updateGoalSchema = z.object({
   body: z.object({
     name: z
       .string()
-      .min(2, 'Name must be at least 2 characters')
-      .max(100, 'Name must not exceed 100 characters')
+      .min(2, "Name must be at least 2 characters")
+      .max(100, "Name must not exceed 100 characters")
       .trim()
       .optional(),
     targetAmount: z
       .number()
-      .positive('Target amount must be greater than 0')
+      .positive("Target amount must be greater than 0")
       .optional(),
-    targetDate: z
-      .string()
-      .regex(/^\d{4}-\d{2}-\d{2}$/, 'Target date must be in YYYY-MM-DD format')
-      .refine(
-        (d) => new Date(d) >= new Date(new Date().toISOString().split('T')[0]),
-        'Target date must be today or a future date',
-      )
-      .optional(),
+    targetDate: goalDateSchema.optional(),
     notes: z.string().max(1000).optional(),
     description: z.string().max(1000).optional(),
     status: z
-      .enum(['active', 'cancelled'], {
+      .enum(["active", "cancelled"], {
         invalid_type_error: "Status must be 'active' or 'cancelled'",
       })
       .optional(),
@@ -68,14 +87,14 @@ export const listGoalsSchema = z.object({
   query: z.object({
     page: z
       .string()
-      .regex(/^\d+$/, 'Page must be a positive integer')
+      .regex(/^\d+$/, "Page must be a positive integer")
       .transform(Number)
-      .refine((n) => n >= 1, 'Page must be at least 1')
+      .refine((n) => n >= 1, "Page must be at least 1")
       .optional()
       .default(String(GOAL_DEFAULT_PAGE)),
     limit: z
       .string()
-      .regex(/^\d+$/, 'Limit must be a positive integer')
+      .regex(/^\d+$/, "Limit must be a positive integer")
       .transform(Number)
       .refine(
         (n) => n >= 1 && n <= GOAL_MAX_LIMIT,
@@ -85,15 +104,18 @@ export const listGoalsSchema = z.object({
       .default(String(GOAL_DEFAULT_LIMIT)),
     search: z.string().max(255).optional(),
     status: z.enum(statusValues).optional(),
-    sort: z.enum(sortFieldValues).optional().default(GOAL_SORT_FIELDS['created_at']),
-    order: z.enum(['asc', 'desc']).optional().default('desc'),
+    sort: z
+      .enum(sortFieldValues)
+      .optional()
+      .default(GOAL_SORT_FIELDS["created_at"]),
+    order: z.enum(["asc", "desc"]).optional().default("desc"),
   }),
 });
 
 // ── Goal ID Param ─────────────────────────────────────────────────────────────
 export const goalIdParamSchema = z.object({
   params: z.object({
-    id: z.string().uuid('Goal ID must be a valid UUID'),
+    id: z.string().uuid("Goal ID must be a valid UUID"),
   }),
 });
 
@@ -101,8 +123,8 @@ export const goalIdParamSchema = z.object({
 export const contributeGoalSchema = z.object({
   body: z.object({
     amount: z
-      .number({ required_error: 'Contribution amount is required' })
-      .positive('Contribution amount must be greater than 0'),
+      .number({ required_error: "Contribution amount is required" })
+      .positive("Contribution amount must be greater than 0"),
     notes: z.string().max(500).optional(),
   }),
 });
