@@ -1,5 +1,7 @@
 # Notifications API
+
 ---
+
 title: Notifications API
 
 module: api
@@ -13,11 +15,13 @@ priority: Critical
 owner: Backend Team
 
 related_docs:
-  - api_overview.md
-  - authentication.md
-  - pagination.md
-  - errors.md
-  - ../development/features/notifications.md
+
+- api_overview.md
+- authentication.md
+- pagination.md
+- errors.md
+- ../development/features/notifications.md
+
 ---
 
 # Notifications API
@@ -81,34 +85,37 @@ Users may access only their own notifications.
 
 Supported notification categories:
 
-- BUDGET
-- GOAL
-- PAYMENT
-- AI_INSIGHT
-- IMPORT
 - SYSTEM
+- SECURITY
+- GOAL
+- BUDGET
+- TRANSACTION
+- AI
 
 Supported priorities:
 
 - LOW
 - MEDIUM
 - HIGH
-- CRITICAL
+
+These values match the locked PostgreSQL enums. Payment, import, and AI
+insight events use the corresponding schema-backed categories when event
+producers are added. `CRITICAL` is not currently supported by the database.
 
 ---
 
 # 4. Endpoints
 
-| Method | Endpoint | Description |
-|---------|----------|-------------|
-| GET | /notifications | List notifications |
-| GET | /notifications/{id} | Get notification |
-| PATCH | /notifications/{id}/read | Mark as read |
-| PATCH | /notifications/read-all | Mark all as read |
-| GET | /notifications/unread-count | Unread count |
-| GET | /notifications/preferences | Notification preferences |
-| PATCH | /notifications/preferences | Update preferences |
-| DELETE | /notifications/{id} | Delete notification |
+| Method | Endpoint                    | Description              |
+| ------ | --------------------------- | ------------------------ |
+| GET    | /notifications              | List notifications       |
+| GET    | /notifications/{id}         | Get notification         |
+| PATCH  | /notifications/{id}/read    | Mark as read             |
+| PATCH  | /notifications/read-all     | Mark all as read         |
+| GET    | /notifications/unread-count | Unread count             |
+| GET    | /notifications/preferences  | Notification preferences |
+| PATCH  | /notifications/preferences  | Update preferences       |
+| DELETE | /notifications/{id}         | Delete notification      |
 
 ---
 
@@ -211,11 +218,7 @@ Example Request
 
 ```json
 {
-  "budgetAlerts": true,
-  "goalUpdates": true,
-  "paymentUpdates": true,
-  "aiInsights": true,
-  "systemAnnouncements": false
+  "notificationsEnabled": false
 }
 ```
 
@@ -237,15 +240,15 @@ System audit records remain unaffected.
 
 # 12. Query Parameters
 
-| Parameter | Description |
-|-----------|-------------|
-| type | Notification category |
-| priority | Notification priority |
-| status | READ / UNREAD |
-| page | Page number |
-| limit | Page size |
-| sort | Sort field |
-| order | asc / desc |
+| Parameter | Description           |
+| --------- | --------------------- |
+| type      | Notification category |
+| priority  | Notification priority |
+| status    | READ / UNREAD         |
+| page      | Page number           |
+| limit     | Page size             |
+| sort      | Sort field            |
+| order     | asc / desc            |
 
 ---
 
@@ -296,14 +299,14 @@ Unread Count
 
 # 15. Error Responses
 
-| HTTP | Error Code |
-|------|------------|
-| 400 | BAD_REQUEST |
-| 401 | UNAUTHORIZED |
-| 403 | FORBIDDEN |
-| 404 | NOTIFICATION_NOT_FOUND |
-| 422 | VALIDATION_ERROR |
-| 500 | INTERNAL_SERVER_ERROR |
+| HTTP | Error Code             |
+| ---- | ---------------------- |
+| 400  | BAD_REQUEST            |
+| 401  | UNAUTHORIZED           |
+| 403  | FORBIDDEN              |
+| 404  | NOTIFICATION_NOT_FOUND |
+| 422  | VALIDATION_ERROR       |
+| 500  | INTERNAL_SERVER_ERROR  |
 
 All responses follow `errors.md`.
 

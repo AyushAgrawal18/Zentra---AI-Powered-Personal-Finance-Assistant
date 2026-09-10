@@ -20,6 +20,7 @@ import { dashboardRoutes } from "../modules/dashboard/routes";
 import { analyticsRoutes } from "../modules/analytics/routes";
 import { paymentRoutes } from "../modules/payments/routes";
 import { csvRoutes } from "../modules/csv/routes";
+import { notificationRoutes } from "../modules/notifications/routes";
 
 router.use("/auth", authRoutes);
 router.use("/transactions", transactionRoutes);
@@ -30,5 +31,6 @@ router.use("/dashboard", dashboardRoutes);
 router.use("/analytics", analyticsRoutes);
 router.use("/payments", paymentRoutes);
 router.use("/imports/csv", csvRoutes);
+router.use("/notifications", notificationRoutes);
 
 export default router;

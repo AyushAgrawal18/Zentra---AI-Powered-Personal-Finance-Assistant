@@ -1,4 +1,5 @@
 # Feature Specification: Notifications & Alerts
+
 # 🔔 Notifications Feature Specification
 
 > **Project:** Zentra
@@ -9,8 +10,14 @@
 >
 > **Priority:** P1
 >
-> **Status:** Planned
->
+> **Status:** Completed
+
+Implementation note: the current schema persists one global
+`notifications_enabled` preference in `user_settings`; per-category preference
+columns and an event bus are not present, so they are not invented here. The
+module exposes a reusable event-creation service for existing or future event
+producers.
+
 > **Owner:** Backend & Frontend Team
 
 ---
