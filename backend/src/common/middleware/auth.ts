@@ -31,6 +31,9 @@ export const authenticate = (req: AuthenticatedRequest, res: Response, next: Nex
   }
 };
 
+// Compatibility alias used by existing module routes.
+export const requireAuth = authenticate;
+
 export const authorize = (...roles: string[]) => {
   return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     if (!req.user) {

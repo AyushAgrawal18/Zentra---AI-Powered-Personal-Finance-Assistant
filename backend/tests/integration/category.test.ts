@@ -22,7 +22,7 @@ app.use(errorHandler);
 const AUTH_HEADER = { Authorization: 'Bearer valid-token' };
 
 const mockCategory = {
-  id: 'cat-uuid-1',
+  id: '11111111-1111-4111-8111-111111111111',
   user_id: 'user-uuid-1',
   name: 'Food',
   type: 'expense',
@@ -36,7 +36,7 @@ const mockCategory = {
 
 const mockSystemCategory = {
   ...mockCategory,
-  id: 'cat-sys-1',
+  id: '22222222-2222-4222-8222-222222222222',
   user_id: null,
   name: 'Salary',
   type: 'income',
@@ -79,7 +79,7 @@ describe('POST /api/v1/categories', () => {
 
     expect(res.status).toBe(201);
     expect(res.body.success).toBe(true);
-    expect(res.body.data.id).toBe('cat-uuid-1');
+    expect(res.body.data.id).toBe(mockCategory.id);
     expect(res.body.data.name).toBe('Food');
   });
 
@@ -88,6 +88,15 @@ describe('POST /api/v1/categories', () => {
       .post('/api/v1/categories')
       .set(AUTH_HEADER)
       .send({ type: 'expense' });
+    expect(res.status).toBe(400);
+  });
+
+  it('returns 400 when icon is missing', async () => {
+    const { icon, ...bodyWithoutIcon } = validBody;
+    const res = await request(app)
+      .post('/api/v1/categories')
+      .set(AUTH_HEADER)
+      .send(bodyWithoutIcon);
     expect(res.status).toBe(400);
   });
 
@@ -148,6 +157,15 @@ describe('GET /api/v1/categories', () => {
     );
   });
 
+  it('accepts the documented system filter', async () => {
+    const res = await request(app)
+      .get('/api/v1/categories?system=true')
+      .set(AUTH_HEADER);
+
+    expect(res.status).toBe(200);
+    expect(repo.listCategories).toHaveBeenCalledWith(expect.objectContaining({ system: true }));
+  });
+
   it('returns 400 when type is invalid', async () => {
     const res = await request(app)
       .get('/api/v1/categories?type=BADTYPE')
@@ -160,11 +178,11 @@ describe('GET /api/v1/categories', () => {
 describe('GET /api/v1/categories/:id', () => {
   it('returns a single category', async () => {
     const res = await request(app)
-      .get('/api/v1/categories/cat-uuid-1')
+      .get(`/api/v1/categories/${mockCategory.id}`)
       .set(AUTH_HEADER);
 
     expect(res.status).toBe(200);
-    expect(res.body.data.id).toBe('cat-uuid-1');
+    expect(res.body.data.id).toBe(mockCategory.id);
   });
 
   it('returns 404 when category is not found', async () => {
@@ -178,7 +196,7 @@ describe('GET /api/v1/categories/:id', () => {
   it('returns 403 when category belongs to another user', async () => {
     (repo.findCategoryById as jest.Mock).mockResolvedValue({ ...mockCategory, user_id: 'other-user' });
     const res = await request(app)
-      .get('/api/v1/categories/cat-uuid-1')
+      .get(`/api/v1/categories/${mockCategory.id}`)
       .set(AUTH_HEADER);
     expect(res.status).toBe(403);
   });
@@ -186,7 +204,7 @@ describe('GET /api/v1/categories/:id', () => {
   it('allows access to system categories by any user', async () => {
     (repo.findCategoryById as jest.Mock).mockResolvedValue(mockSystemCategory);
     const res = await request(app)
-      .get('/api/v1/categories/cat-sys-1')
+      .get(`/api/v1/categories/${mockSystemCategory.id}`)
       .set(AUTH_HEADER);
     expect(res.status).toBe(200);
     expect(res.body.data.isSystem).toBe(true);
@@ -204,7 +222,7 @@ describe('GET /api/v1/categories/:id', () => {
 describe('PATCH /api/v1/categories/:id', () => {
   it('updates a category successfully', async () => {
     const res = await request(app)
-      .patch('/api/v1/categories/cat-uuid-1')
+      .patch(`/api/v1/categories/${mockCategory.id}`)
       .set(AUTH_HEADER)
       .send({ name: 'Groceries' });
 
@@ -217,14 +235,14 @@ describe('PATCH /api/v1/categories/:id', () => {
     const res = await request(app)
       .patch('/api/v1/categories/00000000-0000-0000-0000-000000000000')
       .set(AUTH_HEADER)
-      .send({ name: 'x' });
+      .send({ name: 'Missing Category' });
     expect(res.status).toBe(404);
   });
 
   it('returns 403 when trying to update a system category', async () => {
     (repo.findCategoryById as jest.Mock).mockResolvedValue(mockSystemCategory);
     const res = await request(app)
-      .patch('/api/v1/categories/cat-sys-1')
+      .patch(`/api/v1/categories/${mockSystemCategory.id}`)
       .set(AUTH_HEADER)
       .send({ name: 'Hacked' });
     expect(res.status).toBe(403);
@@ -232,7 +250,7 @@ describe('PATCH /api/v1/categories/:id', () => {
 
   it('returns 400 when color is invalid HEX', async () => {
     const res = await request(app)
-      .patch('/api/v1/categories/cat-uuid-1')
+      .patch(`/api/v1/categories/${mockCategory.id}`)
       .set(AUTH_HEADER)
       .send({ color: 'red' });
     expect(res.status).toBe(400);
@@ -241,7 +259,7 @@ describe('PATCH /api/v1/categories/:id', () => {
   it('returns 409 on duplicate name conflict', async () => {
     (repo.nameExistsForUser as jest.Mock).mockResolvedValue(true);
     const res = await request(app)
-      .patch('/api/v1/categories/cat-uuid-1')
+      .patch(`/api/v1/categories/${mockCategory.id}`)
       .set(AUTH_HEADER)
       .send({ name: 'Duplicate' });
     expect(res.status).toBe(409);
@@ -252,7 +270,7 @@ describe('PATCH /api/v1/categories/:id', () => {
 describe('DELETE /api/v1/categories/:id', () => {
   it('soft-deletes a category successfully', async () => {
     const res = await request(app)
-      .delete('/api/v1/categories/cat-uuid-1')
+      .delete(`/api/v1/categories/${mockCategory.id}`)
       .set(AUTH_HEADER);
 
     expect(res.status).toBe(200);
@@ -270,7 +288,7 @@ describe('DELETE /api/v1/categories/:id', () => {
   it('returns 403 when trying to delete a system category', async () => {
     (repo.findCategoryById as jest.Mock).mockResolvedValue(mockSystemCategory);
     const res = await request(app)
-      .delete('/api/v1/categories/cat-sys-1')
+      .delete(`/api/v1/categories/${mockSystemCategory.id}`)
       .set(AUTH_HEADER);
     expect(res.status).toBe(403);
   });
@@ -278,7 +296,7 @@ describe('DELETE /api/v1/categories/:id', () => {
   it('returns 403 when category belongs to another user', async () => {
     (repo.findCategoryById as jest.Mock).mockResolvedValue({ ...mockCategory, user_id: 'other-user' });
     const res = await request(app)
-      .delete('/api/v1/categories/cat-uuid-1')
+      .delete(`/api/v1/categories/${mockCategory.id}`)
       .set(AUTH_HEADER);
     expect(res.status).toBe(403);
   });

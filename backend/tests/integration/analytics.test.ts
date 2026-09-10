@@ -31,6 +31,7 @@ describe('Analytics Integration Tests', () => {
     it('returns 200 and formatted summary data', async () => {
       (analyticsRepository.getSummary as jest.Mock).mockResolvedValue({
         transactionCount: 10,
+        expenseTransactionCount: 3,
         totalIncome: 1000,
         totalExpense: 300,
       });
@@ -42,8 +43,8 @@ describe('Analytics Integration Tests', () => {
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
       expect(res.body.data.netSavings).toBe(700);
-      expect(res.body.data.averageSpending).toBe(30);
-      expect(analyticsRepository.getSummary).toHaveBeenCalledWith('user-uuid-1', '2026-01-01', '2026-12-31');
+      expect(res.body.data.averageSpending).toBe(100);
+      expect(analyticsRepository.getSummary).toHaveBeenCalledWith('user-uuid-1', '2026-01-01', '2026-12-31', undefined, undefined);
     });
 
     it('returns 422 if dates are invalid order', async () => {
@@ -68,7 +69,7 @@ describe('Analytics Integration Tests', () => {
       expect(res.status).toBe(200);
       expect(res.body.data).toHaveLength(1);
       expect(res.body.data[0].income).toBe(500);
-      expect(analyticsRepository.getTrends).toHaveBeenCalledWith('user-uuid-1', 'monthly', undefined, undefined);
+      expect(analyticsRepository.getTrends).toHaveBeenCalledWith('user-uuid-1', 'monthly', undefined, undefined, undefined, undefined);
     });
 
     it('returns 422 for invalid period', async () => {

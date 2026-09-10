@@ -1,11 +1,13 @@
 import { analyticsRepository } from '../repositories';
 import { DateRangeQueryDTO, CategoryBreakdownDTO } from '../dto';
+import { validateAnalyticsCategory } from '../utils';
 
 export const getCategoriesService = async (
   userId: string,
   query: DateRangeQueryDTO,
 ): Promise<CategoryBreakdownDTO[]> => {
-  const breakdown = await analyticsRepository.getCategoryBreakdown(userId, query.from, query.to);
+  await validateAnalyticsCategory(userId, query.category);
+  const breakdown = await analyticsRepository.getCategoryBreakdown(userId, query.from, query.to, query.category);
   
   const totalExpense = breakdown.reduce((sum, item) => sum + item.amount, 0);
 

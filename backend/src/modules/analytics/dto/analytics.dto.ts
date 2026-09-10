@@ -6,6 +6,13 @@ export type SpendingQueryDTO = z.infer<typeof spendingQuerySchema>['query'];
 export type MonthlyQueryDTO = z.infer<typeof monthlyQuerySchema>['query'];
 export type YearlyQueryDTO = z.infer<typeof yearlyQuerySchema>['query'];
 
+export interface AnalyticsFilterDTO {
+  from?: string;
+  to?: string;
+  category?: string;
+  type?: 'income' | 'expense' | 'transfer';
+}
+
 export interface AnalyticsSummaryDTO {
   totalIncome: number;
   totalExpense: number;

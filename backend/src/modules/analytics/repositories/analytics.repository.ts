@@ -2,22 +2,26 @@ import { db } from '../../../database/connection';
 import { DatabaseError } from '../../../common/errors';
 
 export class AnalyticsRepository {
-  async getSummary(userId: string, from?: string, to?: string) {
+  async getSummary(userId: string, from?: string, to?: string, category?: string, type?: string) {
     try {
       const query = `
         SELECT
           COUNT(*) as transaction_count,
+          COUNT(*) FILTER (WHERE transaction_type = 'expense') as expense_transaction_count,
           COALESCE(SUM(CASE WHEN transaction_type = 'income' THEN amount ELSE 0 END), 0) as total_income,
           COALESCE(SUM(CASE WHEN transaction_type = 'expense' THEN amount ELSE 0 END), 0) as total_expense
         FROM transactions
         WHERE user_id = $1 AND deleted_at IS NULL
           AND ($2::date IS NULL OR transaction_date >= $2::date)
-          AND ($3::date IS NULL OR transaction_date <= $3::date)
+          AND ($3::date IS NULL OR transaction_date < ($3::date + INTERVAL '1 day'))
+          AND ($4::uuid IS NULL OR category_id = $4::uuid)
+          AND ($5::transaction_type IS NULL OR transaction_type = $5::transaction_type)
       `;
-      const result = await db.query(query, [userId, from ?? null, to ?? null]);
+      const result = await db.query(query, [userId, from ?? null, to ?? null, category ?? null, type ?? null]);
       const row = result.rows[0];
       return {
         transactionCount: parseInt(row.transaction_count, 10),
+        expenseTransactionCount: parseInt(row.expense_transaction_count, 10),
         totalIncome: parseFloat(row.total_income),
         totalExpense: parseFloat(row.total_expense),
       };
@@ -26,7 +30,7 @@ export class AnalyticsRepository {
     }
   }
 
-  async getCategoryBreakdown(userId: string, from?: string, to?: string) {
+  async getCategoryBreakdown(userId: string, from?: string, to?: string, category?: string) {
     try {
       const query = `
         SELECT
@@ -36,11 +40,12 @@ export class AnalyticsRepository {
         LEFT JOIN categories c ON t.category_id = c.id
         WHERE t.user_id = $1 AND t.transaction_type = 'expense' AND t.deleted_at IS NULL
           AND ($2::date IS NULL OR t.transaction_date >= $2::date)
-          AND ($3::date IS NULL OR t.transaction_date <= $3::date)
+          AND ($3::date IS NULL OR t.transaction_date < ($3::date + INTERVAL '1 day'))
+          AND ($4::uuid IS NULL OR t.category_id = $4::uuid)
         GROUP BY c.name
         ORDER BY amount DESC
       `;
-      const result = await db.query(query, [userId, from ?? null, to ?? null]);
+      const result = await db.query(query, [userId, from ?? null, to ?? null, category ?? null]);
       return result.rows.map((row) => ({
         category: row.category ?? 'Uncategorized',
         amount: parseFloat(row.amount),
@@ -50,7 +55,7 @@ export class AnalyticsRepository {
     }
   }
 
-  async getTrends(userId: string, period: string, from?: string, to?: string) {
+  async getTrends(userId: string, period: string, from?: string, to?: string, category?: string, type?: string) {
     try {
       // Map period to PostgreSQL date_trunc fields
       let pgPeriod = 'month';
@@ -58,22 +63,27 @@ export class AnalyticsRepository {
       if (period === 'weekly') pgPeriod = 'week';
       if (period === 'yearly') pgPeriod = 'year';
 
+      const labelFormat = pgPeriod === 'day' ? 'YYYY-MM-DD'
+        : pgPeriod === 'week' ? 'IYYY-"W"IW'
+        : pgPeriod === 'year' ? 'YYYY' : 'YYYY-MM';
       const query = `
         SELECT
-          date_trunc($2, transaction_date) as period_label,
+          to_char(date_trunc($2, transaction_date AT TIME ZONE 'UTC'), '${labelFormat}') as period_label,
           COALESCE(SUM(CASE WHEN transaction_type = 'income' THEN amount ELSE 0 END), 0) as income,
           COALESCE(SUM(CASE WHEN transaction_type = 'expense' THEN amount ELSE 0 END), 0) as expense
         FROM transactions
         WHERE user_id = $1 AND deleted_at IS NULL
           AND ($3::date IS NULL OR transaction_date >= $3::date)
-          AND ($4::date IS NULL OR transaction_date <= $4::date)
+          AND ($4::date IS NULL OR transaction_date < ($4::date + INTERVAL '1 day'))
+          AND ($5::uuid IS NULL OR category_id = $5::uuid)
+          AND ($6::transaction_type IS NULL OR transaction_type = $6::transaction_type)
         GROUP BY period_label
         ORDER BY period_label ASC
       `;
-      const result = await db.query(query, [userId, pgPeriod, from ?? null, to ?? null]);
+      const result = await db.query(query, [userId, pgPeriod, from ?? null, to ?? null, category ?? null, type ?? null]);
       
       return result.rows.map(row => ({
-        label: new Date(row.period_label).toISOString(),
+        label: row.period_label,
         income: parseFloat(row.income),
         expense: parseFloat(row.expense),
       }));

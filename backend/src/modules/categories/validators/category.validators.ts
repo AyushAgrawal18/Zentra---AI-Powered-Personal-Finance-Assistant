@@ -25,10 +25,10 @@ export const createCategorySchema = z.object({
       invalid_type_error: 'Type must be income or expense',
     }),
     icon: z
-      .string()
+      .string({ required_error: 'Icon is required' })
+      .min(1, 'Icon is required')
       .max(50, 'Icon must not exceed 50 characters')
-      .trim()
-      .optional(),
+      .trim(),
     color: z
       .string()
       .regex(hexColorRegex, 'Color must be a valid HEX color (e.g. #3B82F6)')
@@ -77,6 +77,7 @@ export const listCategoriesSchema = z.object({
       .default(String(CATEGORY_DEFAULT_LIMIT)),
     search: z.string().max(255).optional(),
     type: z.enum(categoryTypeValues).optional(),
+    system: z.enum(['true', 'false']).transform((value) => value === 'true').optional(),
     sort: z.enum(sortFieldValues).optional().default(CATEGORY_SORT_FIELDS['name']),
     order: z.enum(['asc', 'desc']).optional().default('asc'),
   }),

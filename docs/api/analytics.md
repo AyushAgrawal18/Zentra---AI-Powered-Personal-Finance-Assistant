@@ -254,6 +254,7 @@ Returns month-wise financial summaries suitable for annual reports and charts.
 | month | Month number |
 | year | Year |
 | category | Category ID |
+| type | `income`, `expense`, or `transfer` |
 | from | Start date |
 | to | End date |
 

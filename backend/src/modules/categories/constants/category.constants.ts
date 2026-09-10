@@ -8,6 +8,7 @@ export type CategoryType = typeof CATEGORY_TYPES[keyof typeof CATEGORY_TYPES];
 export const CATEGORY_SORT_FIELDS: Record<string, string> = {
   name: 'name',
   created_at: 'created_at',
+  usage_count: 'usage_count',
 };
 
 export const CATEGORY_DEFAULT_SORT = 'name';

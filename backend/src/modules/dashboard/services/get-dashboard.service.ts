@@ -27,9 +27,21 @@ export const getDashboardService = async (
   ] = await Promise.all([
     transactionRepository.calculateBalance(userId),
     transactionRepository.monthlySummary(userId, month, year),
-    listBudgetsService(userId, { month, year, page: 1, limit: 100 }), 
-    listGoalsService(userId, { status: 'active', page: 1, limit: 100 }),
-    listTransactionsService(userId, { page: 1, limit: 10 }), 
+    listBudgetsService(userId, {
+      month, year, page: 1, limit: 100,
+      sort: '',
+      order: 'asc'
+    }),
+    listGoalsService(userId, {
+      status: 'active', page: 1, limit: 100,
+      sort: '',
+      order: 'asc'
+    }),
+    listTransactionsService(userId, {
+      page: 1, limit: 10,
+      sort: '',
+      order: 'asc'
+    }),
     getSpendingService(userId, { period: 'daily', from: startDate, to: endDate }), // daily breakdown for the month
     getCashFlowService(userId, { period: 'weekly', from: startDate, to: endDate }), // weekly cash flow for the month
   ]);
@@ -49,7 +61,7 @@ export const getDashboardService = async (
       balance: balanceResult.balance,
       income: monthlySummaryResult.totalIncome,
       expense: monthlySummaryResult.totalExpense,
-      savings: monthlySummaryResult.netBalance, 
+      savings: monthlySummaryResult.netBalance,
     },
     budgets: budgetsResult.data,
     goals: goalsResult.data,

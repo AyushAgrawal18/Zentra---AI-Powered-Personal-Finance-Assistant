@@ -9,18 +9,18 @@ export const getMonthlyService = async (
   query: MonthlyQueryDTO,
 ): Promise<MonthlySummaryDTO> => {
   const now = new Date();
-  const month = query.month ?? now.getMonth() + 1;
-  const year = query.year ?? now.getFullYear();
+  const month = query.month ?? now.getUTCMonth() + 1;
+  const year = query.year ?? now.getUTCFullYear();
 
   const [summary, budgets, goals] = await Promise.all([
     transactionRepository.monthlySummary(userId, month, year),
-    listBudgetsService(userId, { month, year, page: 1, limit: 100 }),
-    listGoalsService(userId, { status: 'active', page: 1, limit: 100 }),
+    listBudgetsService(userId, { month, year, page: 1, limit: 100, sort: '', order: 'asc' }),
+    listGoalsService(userId, { status: 'active', page: 1, limit: 100, sort: '', order: 'asc' }),
   ]);
 
   // Derive start and end dates for category breakdown
-  const startDate = new Date(Date.UTC(year, month - 1, 1)).toISOString();
-  const endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999)).toISOString();
+  const startDate = `${year}-${String(month).padStart(2, '0')}-01`;
+  const endDate = `${year}-${String(month).padStart(2, '0')}-${String(new Date(Date.UTC(year, month, 0)).getUTCDate()).padStart(2, '0')}`;
   
   const categories = await getCategoriesService(userId, { from: startDate, to: endDate });
   const topSpendingCategories = categories.slice(0, 5); // top 5

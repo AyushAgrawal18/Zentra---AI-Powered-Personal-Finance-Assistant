@@ -25,6 +25,7 @@ export const listCategoriesService = async (
     limit,
     search: query.search,
     type: query.type,
+    system: query.system,
     sort: query.sort ?? CATEGORY_DEFAULT_SORT,
     order: query.order ?? 'asc',
   });

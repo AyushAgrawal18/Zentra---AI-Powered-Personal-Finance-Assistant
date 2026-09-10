@@ -253,6 +253,8 @@ Example
 GET /categories?type=EXPENSE&search=food
 ```
 
+Supported sort fields are `name`, `created_at`, and `usage_count`.
+
 ---
 
 # 11. Validation Rules

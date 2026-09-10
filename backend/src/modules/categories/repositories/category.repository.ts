@@ -22,6 +22,7 @@ export interface ListCategoriesParams {
   limit: number;
   search?: string;
   type?: string;
+  system?: boolean;
   sort?: string;
   order?: string;
 }
@@ -71,7 +72,7 @@ export class CategoryRepository {
 
   async listCategories(params: ListCategoriesParams): Promise<{ rows: CategoryRecord[]; total: number }> {
     try {
-      const { userId, page, limit, search, type, sort, order } = params;
+      const { userId, page, limit, search, type, system, sort, order } = params;
 
       // A user can see: their own categories + system categories (user_id IS NULL)
       const conditions: string[] = [
@@ -82,6 +83,7 @@ export class CategoryRepository {
       let idx = 2;
 
       if (type) { conditions.push(`c.type = $${idx++}`); values.push(type); }
+      if (system !== undefined) { conditions.push(`c.is_system = $${idx++}`); values.push(system); }
       if (search) {
         conditions.push(`c.name ILIKE $${idx++}`);
         values.push(`%${search}%`);
@@ -89,7 +91,7 @@ export class CategoryRepository {
 
       const where = `WHERE ${conditions.join(' AND ')}`;
 
-      // Whitelist sort field to prevent SQL injection
+      // Whitelist sort field to prevent SQL injection.
       const sortField = CATEGORY_SORT_FIELDS[sort ?? CATEGORY_DEFAULT_SORT] ?? CATEGORY_SORT_FIELDS[CATEGORY_DEFAULT_SORT];
       const sortOrder = (order ?? CATEGORY_DEFAULT_ORDER).toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
 
@@ -99,10 +101,12 @@ export class CategoryRepository {
 
       const offset = (page - 1) * limit;
       const dataQuery = `
-        SELECT c.*
+        SELECT c.*, COUNT(t.id)::int AS usage_count
         FROM categories c
+        LEFT JOIN transactions t ON t.category_id = c.id AND t.deleted_at IS NULL
         ${where}
-        ORDER BY c.${sortField} ${sortOrder}
+        GROUP BY c.id
+        ORDER BY ${sortField === 'usage_count' ? 'usage_count' : `c.${sortField}`} ${sortOrder}, c.id ASC
         LIMIT $${idx++} OFFSET $${idx++};
       `;
       values.push(limit, offset);

@@ -21,12 +21,12 @@ const router = Router();
 
 router.use(requireAuth);
 
-router.get('/summary', validateRequest(dateRangeSchema), getSummary);
-router.get('/spending', validateRequest(spendingQuerySchema), getSpending);
-router.get('/income-expense', validateRequest(dateRangeSchema), getIncomeExpense);
-router.get('/categories', validateRequest(dateRangeSchema), getCategories);
-router.get('/cash-flow', validateRequest(spendingQuerySchema), getCashFlow);
-router.get('/monthly', validateRequest(monthlyQuerySchema), getMonthly);
-router.get('/yearly', validateRequest(yearlyQuerySchema), getYearly);
+router.get('/summary', validateRequest(dateRangeSchema, 422), getSummary);
+router.get('/spending', validateRequest(spendingQuerySchema, 422), getSpending);
+router.get('/income-expense', validateRequest(dateRangeSchema, 422), getIncomeExpense);
+router.get('/categories', validateRequest(dateRangeSchema, 422), getCategories);
+router.get('/cash-flow', validateRequest(spendingQuerySchema, 422), getCashFlow);
+router.get('/monthly', validateRequest(monthlyQuerySchema, 422), getMonthly);
+router.get('/yearly', validateRequest(yearlyQuerySchema, 422), getYearly);
 
 export { router as analyticsRoutes };

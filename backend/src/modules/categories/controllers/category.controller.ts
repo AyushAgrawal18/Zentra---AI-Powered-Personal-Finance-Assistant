@@ -40,6 +40,7 @@ export const listCategories = async (
       ...req.query,
       page: req.query.page ? Number(req.query.page) : undefined,
       limit: req.query.limit ? Number(req.query.limit) : undefined,
+      system: req.query.system === undefined ? undefined : req.query.system === 'true',
     } as unknown as ListCategoriesQueryDTO;
     const result = await listCategoriesService(req.user!.id, query);
     res.status(200).json({

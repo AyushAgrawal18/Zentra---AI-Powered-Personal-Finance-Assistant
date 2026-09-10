@@ -8,7 +8,7 @@ version: 1.0.0
 
 priority: P0
 
-status: Planned
+status: Completed
 
 owner: Backend Team
 
@@ -56,7 +56,7 @@ Version: 1.0.0
 
 Priority: P0
 
-Status: Planned
+Status: Completed
 
 ---
 

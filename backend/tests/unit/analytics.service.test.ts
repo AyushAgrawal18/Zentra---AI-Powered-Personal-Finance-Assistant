@@ -14,6 +14,7 @@ describe('Analytics Services', () => {
     it('calculates average spending and net savings correctly', async () => {
       (analyticsRepository.getSummary as jest.Mock).mockResolvedValue({
         transactionCount: 10,
+        expenseTransactionCount: 4,
         totalIncome: 5000,
         totalExpense: 2000,
       });
@@ -21,13 +22,14 @@ describe('Analytics Services', () => {
       const result = await getSummaryService(userId, {});
       
       expect(result.netSavings).toBe(3000); // 5000 - 2000
-      expect(result.averageSpending).toBe(200); // 2000 / 10
-      expect(analyticsRepository.getSummary).toHaveBeenCalledWith(userId, undefined, undefined);
+      expect(result.averageSpending).toBe(500); // 2000 / 4 expense transactions
+      expect(analyticsRepository.getSummary).toHaveBeenCalledWith(userId, undefined, undefined, undefined, undefined);
     });
 
     it('handles zero transactions gracefully', async () => {
       (analyticsRepository.getSummary as jest.Mock).mockResolvedValue({
         transactionCount: 0,
+        expenseTransactionCount: 0,
         totalIncome: 0,
         totalExpense: 0,
       });
@@ -42,6 +44,7 @@ describe('Analytics Services', () => {
     it('maps summary values properly', async () => {
       (analyticsRepository.getSummary as jest.Mock).mockResolvedValue({
         transactionCount: 5,
+        expenseTransactionCount: 2,
         totalIncome: 1000,
         totalExpense: 400,
       });
